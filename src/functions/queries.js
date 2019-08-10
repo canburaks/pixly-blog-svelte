@@ -6,23 +6,27 @@ import { Store, updateStore } from "./store.js"
 //client.request(query, variables).then(data => console.log(data))
 
 
-export async function getBlog(first=20, skip=0) {
+export async function blogRequest(page) {
     const endpoint = "https://blog.pixly.app/graphql"
+	if(!page){
+		page = 1
+	}
+	const first = 20;
+	const skip = (page - 1) * 20
 
-    const client = new GraphQLClient(endpoint, {
+	const client = new GraphQLClient(endpoint, {
         headers: {},
     })
 
     const BLOG_QUERY = `query blogPosts($first: Int, $skip: Int) {
         blogPosts(first: $first, skip: $skip) {
-			id, header, summary, image, poster, text, slug,  postType, createdAt, updatedAt,
+			id, header, summary, image,  text, slug,  postType, createdAt, updatedAt,
 			author{
 				username, name
 			},
 			tag{
 				customId,
 				movielensId,
-				name
 			}
         }
     }`
@@ -36,7 +40,7 @@ export async function getBlog(first=20, skip=0) {
 	}
 	//Update local store
 	if (data && data.blogPosts){
-		console.log("data bp:", data.blogPosts)
+		//console.log("data bp:", data.blogPosts)
 		data.blogPosts.forEach(p => {
 			var newPost = {};
 			newPost[p.id] = p;
@@ -47,33 +51,71 @@ export async function getBlog(first=20, skip=0) {
     return data
 }
 
-export async function getPost(id) {
+export async function postRequestById(id) {
   const endpoint = "https://blog.pixly.app/graphql"
 
   const client = new GraphQLClient(endpoint, {
     headers: {},
   })
 
-  const POST_QUERY = `query post($id: Int) {
-    post(id: $id) {
-	  id, header, image, poster, text, slug,  postType, createdAt, updatedAt,
-	  author{
-		  username, name
-	  },
-	  tag{
-		  customId,
-		  movielensId,
-		  name
-	  }
+  const POST_QUERY = `query post($id: Int, $slug: String) {
+    post(id: $id, slug: $slug) {
+		id, header, summary, image,  text, slug,  postType, createdAt, updatedAt,
+		author{
+			username, name
+		},
+		tag{
+			customId,
+			movielensId,
+		}
     }
   }`
 	const data = await client.request(POST_QUERY, { id })
-	console.log("post query data: ",data)
+	//console.log("post query data: ",data)
   // Add aws s3 prefix to image, cant be done on server
-
-  return data
+	//Update local store
+	if (data && data.post) {
+		//console.log("post query data.post:", data.post)
+		const newPost = {}
+		newPost[data.post.id] = data.post
+		Store.update(s => ({ ...s, ...newPost}))
+	}
+	if (data && data.post) return data.post
+  return data.post
 }
 
+export async function postRequestBySlug(slug) {
+	const endpoint = "https://blog.pixly.app/graphql"
+
+	const client = new GraphQLClient(endpoint, {
+		headers: {},
+	})
+
+	const POST_QUERY = `query post($id: Int, $slug: String) {
+    post(id: $id, slug: $slug) {
+		id, header, summary, image,  text, slug,  postType, createdAt, updatedAt,
+		author{
+			username, name
+		},
+		tag{
+			customId,
+			movielensId,
+		}
+    }
+  }`
+	const data = await client.request(POST_QUERY, { slug })
+	//console.log("post query data: ", data)
+	// Add aws s3 prefix to image, cant be done on server
+	//Update local store
+	if (data && data.post) {
+		//console.log("post query data.post:", data.post)
+		const newPost = {}
+		newPost[data.post.id] = data.post
+		Store.update(s => ({ ...s, ...newPost }))
+	}
+	if (data && data.post) return data.post
+	return data.post
+}
 
 
 

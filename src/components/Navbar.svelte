@@ -1,8 +1,23 @@
-<script>
 
-</script>
+<nav id="navbar">
+    <div class="brand-box nav-left">
+        <a href="/" >
+            <p class="brand-pixly-new">
+                PI
+                <span class="span-1">X</span>
+                <span class="span-2">L</span>
+                <span class="span-3">Y</span>
+                <span class="span-blog">BLOG</span>
+            </p>
+        </a>
+    </div>
+    
+    <div class="nav-pages nav-middle">
+
+    </div>
 
 
+</nav>
 <style>
     nav#navbar{
         position: fixed;
@@ -24,6 +39,7 @@
     }
     nav#navbar a {
         color:rgb(133, 134, 136);
+        text-decoration: none;
 
     }
 
@@ -47,26 +63,7 @@
     p.brand-pixly-new .span-blog{
         color:var(--active-color-comp-2);
     }
+    
 
 </style>
 
-
-<nav id="navbar">
-    <div class="brand-box nav-left">
-        <a target="_blank" href="https://pixly.app">
-            <p class="brand-pixly-new">
-                PI
-                <span class="span-1">X</span>
-                <span class="span-2">L</span>
-                <span class="span-3">Y</span>
-                <span class="span-blog">BLOG</span>
-            </p>
-        </a>
-    </div>
-    
-    <div class="nav-pages nav-middle">
-
-    </div>
-
-
-</nav>

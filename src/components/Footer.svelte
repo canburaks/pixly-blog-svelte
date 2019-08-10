@@ -52,6 +52,7 @@
     .footer-twitter a {
         font-size: 14px;
         font-weight: lighter;
+        color:var(--color-light)
     }
 
 </style>

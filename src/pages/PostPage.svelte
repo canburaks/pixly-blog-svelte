@@ -1,14 +1,21 @@
 <script>
-  //import { getClient, query } from 'svelte-apollo';
-  //import { GET_BLOG, GET_POST } from './queries';
-  import PostItem from "../components/PostItem.svelte";
-  import { getPost } from "../functions/queries.js";
+	import { onMount } from 'svelte';
+	//import { getClient, query } from 'svelte-apollo';
+	//import { GET_BLOG, GET_POST } from './queries';
+	import PostItem from "../components/PostItem.svelte";
+	import { Store, updateStore, getPostBySlug, getServerPostBySlug} from "../functions/store.js"
+	export let slug;
 
-  const post = getPost(3).catch(error => console.error(error));
-  console.log("post", post)
-  //const content = document.querySelector("#post")
-  //content.innerHTML = post.text;
-  console.log(window.location)
+	let post;
+	onMount(async () => {
+		post = await getPostBySlug(slug)
+		//console.log("onmount:", post)
+	})
+	/*
+	*/
+	console.log(window.history)
+	//console.log(window.location)
+	//console.log("post page props",  slug)
 </script>
 
 
@@ -26,33 +33,41 @@
         </script>
     {/if}
 
+	{#if post && post.header}
+	<article class="message-box">
+		<section class="top-box">
+			<h2 class="post-item-header">{post.header}</h2>
+			<div class="top-bottom">
+				<a target="_blank" class="author underline" href={`https://pixly.app/user/${post.author.username}`}>
+					{post.author.name ? post.author.name : post.author.username}
+				</a>
+				<p class="post-item-date">{post.updatedAt.slice(0,10)}</p>
+			</div>
+		</section>
 
-	{#await post}
-		Loading...
-	{:then data}
+		<hr>
 
-		<article class="message-box">
-			<section class="top-box">
-				<h2 class="post-item-header">{data.post.header}</h2>
-				<div class="top-bottom">
-					<a target="_blank" class="author" href={`https://pixly.app/user/${data.post.author.username}`}>
-						{data.post.author.name}
-					</a>
-					<p class="post-item-date">{data.post.updatedAt.slice(0,10)}</p>
-				</div>
-			</section>
+		<section id="post" class="content-box">
+			{@html post.text}
+		</section>
 
-			<hr>
+	</article>
+	{/if}
 
-			<section id="post" class="content-box">
-				{@html data.post.text}
-			</section>
-
-		</article>
-
-	{:catch error}
-		Error: {error}
-    {/await}
+	<div class="breadcrumb">
+		{#if window.location.pathname !== "/"}
+			<span on:click={() =>window.history.back()}>
+				<svg 
+					aria-hidden="true" focusable="false" data-prefix="fas" 
+					data-icon="long-arrow-alt-left" class="left-arrow" 
+					role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+				>
+					<path fill="currentColor" d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z"></path>
+				</svg>
+				BACK
+			</span>
+		{/if}
+	</div>
 </div>
 
 <style>

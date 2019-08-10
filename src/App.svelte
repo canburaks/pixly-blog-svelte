@@ -1,32 +1,43 @@
 <script>
-  import { onMount } from 'svelte';
-  import { Router, Link, Route } from "svelte-routing";
+	import { onMount } from 'svelte';
+	import { Router,  Route, links } from "svelte-routing";
 
-  import Navbar from "./components/Navbar.svelte";
-  import Footer from "./components/Footer.svelte";
-  //import Main from "./Main.svelte";
+	import Navbar from "./components/Navbar.svelte";
+	import Footer from "./components/Footer.svelte";
+	//import Main from "./Main.svelte";
 
-  import PostItem from "./components/PostItem.svelte";
-  import BlogPage from "./pages/BlogPage.svelte";
-  import PostPage from "./pages/PostPage.svelte";
+	import PostItem from "./components/PostItem.svelte";
+	import BlogPage from "./pages/BlogPage.svelte";
+	import PostPage from "./pages/PostPage.svelte";
 
-  import { Store, updateStore, queryStore} from "./functions/store.js"
-  import { getBlog } from "./functions/queries.js";
+	import { Store } from "./functions/store.js"
+	
 
-  export let url = window.location.href.includes("localhost") ? "http://localhost:5000/" : "https://blog.pixly.app"
-  
-  onMount(() => {
-	  //Get Blog posts and update local store
-	  getBlog()
-  })
- 
- let storePosts;
+	$: pathname = window.location.pathname
+	let storePosts;
 	const unsubscribe = Store.subscribe(value => {
 		storePosts = value;
 	});
-	console.log("store posts",storePosts.length)
-
 </script>
+
+<div class="App" use:links>
+
+  <Router>
+	<Navbar />
+		<main class="main-content-container">
+
+			<Route path="post/:slug" component="{PostPage}" />
+			<Route path="/:page" component="{BlogPage}" />
+			<Route path="blog" component="{BlogPage}" />
+			<Route path="/" component="{BlogPage}" />
+		</main>
+	<Footer />
+  
+  </Router>
+  
+</div>
+
+
 
 <style>
 	.App {
@@ -54,33 +65,9 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: center;
-		padding: 5vw 3vw;
+		padding: 0vw 5vw;
 		/*margin-right:5%;
 			margin-left:5%;
 			*/
 	}
 </style>
-
-<div class="App">
-
-  <Router>
-	<Navbar />
-		<main class="main-content-container">
-			<h6>store: </h6>
-			{#if Object.keys(storePosts).length > 0}
-				<ul>
-					{#each Object.keys(storePosts) as id}
-						<li>id:{id} - {storePosts[id].header}</li>
-					{/each}
-				</ul>
-			{/if}
-			<Route path="post/:slug" component="{PostPage}" />
-			<Route path="blog/:page" component="{BlogPage}" />
-			<Route path="blog" component="{BlogPage}" />
-			<Route path="/" component="{BlogPage}" />
-		</main>
-	<Footer />
-  
-  </Router>
-  
-</div>

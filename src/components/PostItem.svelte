@@ -1,7 +1,7 @@
 <script>
-  import { Router, Link, Route } from "svelte-routing";
+    import { Router, Link, Route } from "svelte-routing";
 
-  export let post
+    export let post
 </script>
 
 
@@ -11,17 +11,30 @@
     <div class="top-box">
         <div class="text-box">
             <article class="post-item-article">
-                <h2 class="post-item-header">{post.header}</h2>
-                <p class="post-item-summary">{post.summary}</p>
+                <h2 class="post-item-header">
+                    <Link to="{`/post/${post.slug}`}" state={{id:post.id}}>
+                        {post.header}
+                    </Link>
+                </h2>
+
+            
+                <p class="post-item-summary">
+                    <Link to="{`/post/${post.slug}`}" state={{id:post.id}}>
+                        {post.summary}
+                    </Link>
+                </p>
             </article>
-                <a target="_blank" class="author" href={`https://pixly.app/user/${post.author.username}`}>
+
+                <a target="_blank" class="author" href={`https://pixly.app/user/${post.author.username}`} title="Pixly Page">
                     {post.author.name}
                 </a>
         </div>
 
-        <div class="image-box">
-             <img src={post.imageUrl ? post.imageUrl : post.image} alt="Post image" />
-        </div>
+        {#if post.image }
+            <div class="image-box">
+                 <img src={post.imageUrl ? post.imageUrl : post.image} alt="Post image" />
+            </div>
+        {/if}
     </div>
 </div>
 
@@ -73,6 +86,7 @@
     a.author{
         font-size: 14px;
         margin:16px 0 0 0;
+        text-decoration: underline;
     }
 @media all and (min-width: 300px) { 
     .text-box{
