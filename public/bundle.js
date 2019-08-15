@@ -162,6 +162,31 @@
         e.initCustomEvent(type, false, false, detail);
         return e;
     }
+    class HtmlTag {
+        constructor(html, anchor = null) {
+            this.e = element('div');
+            this.a = anchor;
+            this.u(html);
+        }
+        m(target, anchor = null) {
+            for (let i = 0; i < this.n.length; i += 1) {
+                insert(target, this.n[i], anchor);
+            }
+            this.t = target;
+        }
+        u(html) {
+            this.e.innerHTML = html;
+            this.n = Array.from(this.e.childNodes);
+        }
+        p(html) {
+            this.d();
+            this.u(html);
+            this.m(this.t, this.a);
+        }
+        d() {
+            this.n.forEach(detach);
+        }
+    }
 
     let current_component;
     function set_current_component(component) {
@@ -1933,22 +1958,22 @@
 
     		h: function hydrate() {
     			attr(span0, "class", "span-1 svelte-1lbxtcg");
-    			add_location(span0, file$1, 6, 16, 153);
+    			add_location(span0, file$1, 6, 16, 154);
     			attr(span1, "class", "span-2 svelte-1lbxtcg");
-    			add_location(span1, file$1, 7, 16, 199);
+    			add_location(span1, file$1, 7, 16, 200);
     			attr(span2, "class", "span-3 svelte-1lbxtcg");
-    			add_location(span2, file$1, 8, 16, 245);
+    			add_location(span2, file$1, 8, 16, 246);
     			attr(span3, "class", "span-blog svelte-1lbxtcg");
-    			add_location(span3, file$1, 9, 16, 291);
+    			add_location(span3, file$1, 9, 16, 292);
     			attr(p, "class", "brand-pixly-new svelte-1lbxtcg");
-    			add_location(p, file$1, 4, 12, 90);
+    			add_location(p, file$1, 4, 12, 91);
     			attr(a, "href", "/");
     			attr(a, "class", "svelte-1lbxtcg");
-    			add_location(a, file$1, 3, 8, 64);
+    			add_location(a, file$1, 3, 8, 65);
     			attr(div0, "class", "brand-box nav-left");
-    			add_location(div0, file$1, 2, 4, 23);
+    			add_location(div0, file$1, 2, 4, 24);
     			attr(div1, "class", "nav-pages nav-middle");
-    			add_location(div1, file$1, 14, 4, 377);
+    			add_location(div1, file$1, 14, 4, 378);
     			attr(nav, "id", "navbar");
     			attr(nav, "class", "svelte-1lbxtcg");
     			add_location(nav, file$1, 1, 0, 1);
@@ -2099,8 +2124,8 @@
 
     const file$3 = "src/components/PostItem.svelte";
 
-    // (15:20) <Link to="{`/post/${post.slug}`}" state={{id:post.id}}>
-    function create_default_slot_1(ctx) {
+    // (17:20) <Link to="{`/post/${post.slug}`}" state={{id:post.id}}>
+    function create_default_slot_2(ctx) {
     	var t_value = ctx.post.header, t;
 
     	return {
@@ -2130,8 +2155,8 @@
     	};
     }
 
-    // (22:20) <Link to="{`/post/${post.slug}`}" state={{id:post.id}}>
-    function create_default_slot(ctx) {
+    // (24:20) <Link to="{`/post/${post.slug}`}" state={{id:post.id}}>
+    function create_default_slot_1(ctx) {
     	var t_value = ctx.post.summary, t;
 
     	return {
@@ -2161,14 +2186,24 @@
     	};
     }
 
-    // (33:8) {#if post.image }
+    // (35:8) {#if post.image }
     function create_if_block$1(ctx) {
-    	var div, img, img_src_value;
+    	var div, current;
+
+    	var link = new Link({
+    		props: {
+    		to: `/post/${ctx.post.slug}`,
+    		state: {id:ctx.post.id},
+    		$$slots: { default: [create_default_slot] },
+    		$$scope: { ctx }
+    	},
+    		$$inline: true
+    	});
 
     	return {
     		c: function create() {
     			div = element("div");
-    			img = element("img");
+    			link.$$.fragment.c();
     			this.h();
     		},
 
@@ -2176,11 +2211,67 @@
     			div = claim_element(nodes, "DIV", { class: true }, false);
     			var div_nodes = children(div);
 
-    			img = claim_element(div_nodes, "IMG", { src: true, alt: true, class: true }, false);
+    			link.$$.fragment.l(div_nodes);
+    			div_nodes.forEach(detach);
+    			this.h();
+    		},
+
+    		h: function hydrate() {
+    			attr(div, "class", "image-box svelte-1wx1il9");
+    			add_location(div, file$3, 35, 12, 933);
+    		},
+
+    		m: function mount(target, anchor) {
+    			insert(target, div, anchor);
+    			mount_component(link, div, null);
+    			current = true;
+    		},
+
+    		p: function update(changed, ctx) {
+    			var link_changes = {};
+    			if (changed.post) link_changes.to = `/post/${ctx.post.slug}`;
+    			if (changed.post) link_changes.state = {id:ctx.post.id};
+    			if (changed.$$scope || changed.post) link_changes.$$scope = { changed, ctx };
+    			link.$set(link_changes);
+    		},
+
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(link.$$.fragment, local);
+
+    			current = true;
+    		},
+
+    		o: function outro(local) {
+    			transition_out(link.$$.fragment, local);
+    			current = false;
+    		},
+
+    		d: function destroy(detaching) {
+    			if (detaching) {
+    				detach(div);
+    			}
+
+    			destroy_component(link);
+    		}
+    	};
+    }
+
+    // (37:16) <Link to="{`/post/${post.slug}`}" state={{id:post.id}}>
+    function create_default_slot(ctx) {
+    	var img, img_src_value;
+
+    	return {
+    		c: function create() {
+    			img = element("img");
+    			this.h();
+    		},
+
+    		l: function claim(nodes) {
+    			img = claim_element(nodes, "IMG", { src: true, alt: true, class: true }, false);
     			var img_nodes = children(img);
 
     			img_nodes.forEach(detach);
-    			div_nodes.forEach(detach);
     			this.h();
     		},
 
@@ -2188,14 +2279,11 @@
     			attr(img, "src", img_src_value = ctx.post.imageUrl ? ctx.post.imageUrl : ctx.post.image);
     			attr(img, "alt", "Post image");
     			attr(img, "class", "svelte-1wx1il9");
-    			add_location(img, file$3, 34, 17, 972);
-    			attr(div, "class", "image-box svelte-1wx1il9");
-    			add_location(div, file$3, 33, 12, 931);
+    			add_location(img, file$3, 37, 20, 1049);
     		},
 
     		m: function mount(target, anchor) {
-    			insert(target, div, anchor);
-    			append(div, img);
+    			insert(target, img, anchor);
     		},
 
     		p: function update(changed, ctx) {
@@ -2206,7 +2294,7 @@
 
     		d: function destroy(detaching) {
     			if (detaching) {
-    				detach(div);
+    				detach(img);
     			}
     		}
     	};
@@ -2219,7 +2307,7 @@
     		props: {
     		to: `/post/${ctx.post.slug}`,
     		state: {id:ctx.post.id},
-    		$$slots: { default: [create_default_slot_1] },
+    		$$slots: { default: [create_default_slot_2] },
     		$$scope: { ctx }
     	},
     		$$inline: true
@@ -2229,7 +2317,7 @@
     		props: {
     		to: `/post/${ctx.post.slug}`,
     		state: {id:ctx.post.id},
-    		$$slots: { default: [create_default_slot] },
+    		$$slots: { default: [create_default_slot_1] },
     		$$scope: { ctx }
     	},
     		$$inline: true
@@ -2299,22 +2387,22 @@
 
     		h: function hydrate() {
     			attr(h2, "class", "post-item-header svelte-1wx1il9");
-    			add_location(h2, file$3, 13, 16, 249);
+    			add_location(h2, file$3, 15, 16, 251);
     			attr(p, "class", "post-item-summary svelte-1wx1il9");
-    			add_location(p, file$3, 20, 16, 473);
+    			add_location(p, file$3, 22, 16, 475);
     			attr(article, "class", "post-item-article");
-    			add_location(article, file$3, 12, 12, 197);
+    			add_location(article, file$3, 14, 12, 199);
     			attr(a, "target", "_blank");
     			attr(a, "class", "author svelte-1wx1il9");
     			attr(a, "href", a_href_value = `https://pixly.app/user/${ctx.post.author.username}`);
     			attr(a, "title", "Pixly Page");
-    			add_location(a, file$3, 27, 16, 707);
+    			add_location(a, file$3, 29, 16, 709);
     			attr(div0, "class", "text-box svelte-1wx1il9");
-    			add_location(div0, file$3, 11, 8, 162);
+    			add_location(div0, file$3, 13, 8, 164);
     			attr(div1, "class", "top-box svelte-1wx1il9");
-    			add_location(div1, file$3, 10, 4, 132);
+    			add_location(div1, file$3, 12, 4, 134);
     			attr(div2, "class", "message-box svelte-1wx1il9");
-    			add_location(div2, file$3, 8, 0, 101);
+    			add_location(div2, file$3, 10, 0, 103);
     		},
 
     		m: function mount(target, anchor) {
@@ -2359,14 +2447,19 @@
     			if (ctx.post.image) {
     				if (if_block) {
     					if_block.p(changed, ctx);
+    					transition_in(if_block, 1);
     				} else {
     					if_block = create_if_block$1(ctx);
     					if_block.c();
+    					transition_in(if_block, 1);
     					if_block.m(div1, null);
     				}
     			} else if (if_block) {
-    				if_block.d(1);
-    				if_block = null;
+    				group_outros();
+    				transition_out(if_block, 1, 1, () => {
+    					if_block = null;
+    				});
+    				check_outros();
     			}
     		},
 
@@ -2376,12 +2469,14 @@
 
     			transition_in(link1.$$.fragment, local);
 
+    			transition_in(if_block);
     			current = true;
     		},
 
     		o: function outro(local) {
     			transition_out(link0.$$.fragment, local);
     			transition_out(link1.$$.fragment, local);
+    			transition_out(if_block);
     			current = false;
     		},
 
@@ -3186,6 +3281,7 @@
     			Store.update(s  => ({...s, ...newPost}) );
     		});
     	}
+    	console.log(data);
 
         return data
     }
@@ -3213,6 +3309,9 @@
     	//console.log("post query data: ", data)
     	// Add aws s3 prefix to image, cant be done on server
     	//Update local store
+        if (data && data.post){
+    		data.post.imageUrl = "https://cbs-static.s3.amazonaws.com/static/media/" + data.post.image;
+    	}
     	if (data && data.post) {
     		//console.log("post query data.post:", data.post)
     		const newPost = {};
@@ -3288,7 +3387,7 @@
     	return child_ctx;
     }
 
-    // (23:2) {#if window.location.pathname !== "/"}
+    // (25:2) {#if window.location.pathname !== "/"}
     function create_if_block_2(ctx) {
     	var button, t, dispose;
 
@@ -3310,7 +3409,7 @@
 
     		h: function hydrate() {
     			attr(button, "class", "back-button");
-    			add_location(button, file$4, 23, 3, 626);
+    			add_location(button, file$4, 25, 3, 638);
     			dispose = listen(button, "click", click_handler);
     		},
 
@@ -3329,7 +3428,7 @@
     	};
     }
 
-    // (30:4) {#if Object.keys(storePosts).length > 0 }
+    // (32:4) {#if Object.keys(storePosts).length > 0 }
     function create_if_block_1$1(ctx) {
     	var each_1_anchor, current;
 
@@ -3419,7 +3518,7 @@
     	};
     }
 
-    // (31:8) {#each Object.keys(storePosts) as key }
+    // (33:8) {#each Object.keys(storePosts) as key }
     function create_each_block(ctx) {
     	var current;
 
@@ -3466,7 +3565,7 @@
     	};
     }
 
-    // (36:4) {#if window.location.href.includes("pixly")}
+    // (38:4) {#if window.location.href.includes("pixly")}
     function create_if_block$2(ctx) {
     	var ins, t0, script, t1;
 
@@ -3501,8 +3600,8 @@
     			attr(ins, "data-ad-layout-key", "-f7+5u+4t-da+6l");
     			attr(ins, "data-ad-client", "ca-pub-9259748524746137");
     			attr(ins, "data-ad-slot", "3122895789");
-    			add_location(ins, file$4, 36, 8, 959);
-    			add_location(script, file$4, 43, 8, 1217);
+    			add_location(ins, file$4, 38, 8, 971);
+    			add_location(script, file$4, 45, 8, 1229);
     		},
 
     		m: function mount(target, anchor) {
@@ -3562,8 +3661,8 @@
 
     		h: function hydrate() {
     			attr(div0, "class", "breadcrumb");
-    			add_location(div0, file$4, 21, 1, 557);
-    			attr(div1, "class", "page-container svelte-1af3srv");
+    			add_location(div0, file$4, 23, 1, 569);
+    			attr(div1, "class", "page-container blog-page svelte-1af3srv");
     			add_location(div1, file$4, 20, 0, 527);
     		},
 
@@ -3695,12 +3794,152 @@
     	}
     }
 
+    /* src/richdata/PublisherData.svelte generated by Svelte v3.7.1 */
+
+    const file$5 = "src/richdata/PublisherData.svelte";
+
+    function create_fragment$7(ctx) {
+    	var div3, div0, meta0, t0, div2, meta1, t1, div1, a, img, t2, meta2;
+
+    	return {
+    		c: function create() {
+    			div3 = element("div");
+    			div0 = element("div");
+    			meta0 = element("meta");
+    			t0 = space();
+    			div2 = element("div");
+    			meta1 = element("meta");
+    			t1 = space();
+    			div1 = element("div");
+    			a = element("a");
+    			img = element("img");
+    			t2 = space();
+    			meta2 = element("meta");
+    			this.h();
+    		},
+
+    		l: function claim(nodes) {
+    			div3 = claim_element(nodes, "DIV", {}, false);
+    			var div3_nodes = children(div3);
+
+    			div0 = claim_element(div3_nodes, "DIV", { itemscope: true, itemprop: true, itemtype: true }, false);
+    			var div0_nodes = children(div0);
+
+    			meta0 = claim_element(div0_nodes, "META", { content: true }, false);
+    			var meta0_nodes = children(meta0);
+
+    			meta0_nodes.forEach(detach);
+    			div0_nodes.forEach(detach);
+    			t0 = claim_text(div3_nodes, "\n    ");
+
+    			div2 = claim_element(div3_nodes, "DIV", { itemscope: true, itemprop: true, itemtype: true }, false);
+    			var div2_nodes = children(div2);
+
+    			meta1 = claim_element(div2_nodes, "META", { itemprop: true, content: true }, false);
+    			var meta1_nodes = children(meta1);
+
+    			meta1_nodes.forEach(detach);
+    			t1 = claim_text(div2_nodes, "\n        ");
+
+    			div1 = claim_element(div2_nodes, "DIV", { itemscope: true, itemprop: true, itemtype: true, style: true }, false);
+    			var div1_nodes = children(div1);
+
+    			a = claim_element(div1_nodes, "A", { href: true, taget: true }, false);
+    			var a_nodes = children(a);
+
+    			img = claim_element(a_nodes, "IMG", { alt: true, style: true, src: true }, false);
+    			var img_nodes = children(img);
+
+    			img_nodes.forEach(detach);
+    			a_nodes.forEach(detach);
+    			t2 = claim_text(div1_nodes, "\n            ");
+
+    			meta2 = claim_element(div1_nodes, "META", { itemprop: true, content: true }, false);
+    			var meta2_nodes = children(meta2);
+
+    			meta2_nodes.forEach(detach);
+    			div1_nodes.forEach(detach);
+    			div2_nodes.forEach(detach);
+    			div3_nodes.forEach(detach);
+    			this.h();
+    		},
+
+    		h: function hydrate() {
+    			attr(meta0, "content", "https://blog.pixly.app");
+    			add_location(meta0, file$5, 18, 8, 507);
+    			attr(div0, "itemscope", "");
+    			attr(div0, "itemprop", "mainEntityOfPage");
+    			attr(div0, "itemtype", "http://schema.org/WebPage");
+    			add_location(div0, file$5, 17, 4, 418);
+    			attr(meta1, "itemprop", "name");
+    			attr(meta1, "content", "pixly");
+    			add_location(meta1, file$5, 22, 8, 656);
+    			attr(img, "alt", "post image");
+    			set_style(img, "width", "45px");
+    			set_style(img, "height", "45px");
+    			attr(img, "src", "https://cbs-static.s3.eu-west-2.amazonaws.com/static/images/favicon-small.png");
+    			add_location(img, file$5, 28, 16, 991);
+    			attr(a, "href", "https://pixly.app");
+    			attr(a, "taget", "_blank");
+    			add_location(a, file$5, 27, 12, 931);
+    			attr(meta2, "itemprop", "url");
+    			attr(meta2, "content", "https://cbs-static.s3.eu-west-2.amazonaws.com/static/images/favicon-small.png");
+    			add_location(meta2, file$5, 34, 12, 1243);
+    			attr(div1, "itemscope", "");
+    			attr(div1, "itemprop", "logo");
+    			attr(div1, "itemtype", "http://schema.org/ImageObject");
+    			set_style(div1, "display", "flex");
+    			set_style(div1, "flex-direction", "row");
+    			set_style(div1, "justify-content", "flex-start");
+    			set_style(div1, "align-items", "center");
+    			set_style(div1, "margin", "10px 0");
+    			add_location(div1, file$5, 23, 8, 704);
+    			attr(div2, "itemscope", "");
+    			attr(div2, "itemprop", "publisher");
+    			attr(div2, "itemtype", "http://schema.org/Organization");
+    			add_location(div2, file$5, 21, 4, 569);
+    			add_location(div3, file$5, 16, 0, 408);
+    		},
+
+    		m: function mount(target, anchor) {
+    			insert(target, div3, anchor);
+    			append(div3, div0);
+    			append(div0, meta0);
+    			append(div3, t0);
+    			append(div3, div2);
+    			append(div2, meta1);
+    			append(div2, t1);
+    			append(div2, div1);
+    			append(div1, a);
+    			append(a, img);
+    			append(div1, t2);
+    			append(div1, meta2);
+    		},
+
+    		p: noop,
+    		i: noop,
+    		o: noop,
+
+    		d: function destroy(detaching) {
+    			if (detaching) {
+    				detach(div3);
+    			}
+    		}
+    	};
+    }
+
+    class PublisherData extends SvelteComponentDev {
+    	constructor(options) {
+    		super(options);
+    		init(this, options, null, create_fragment$7, safe_not_equal, []);
+    	}
+    }
+
     /* src/pages/PostPage.svelte generated by Svelte v3.7.1 */
-    const { console: console_1$1 } = globals;
 
-    const file$5 = "src/pages/PostPage.svelte";
+    const file$6 = "src/pages/PostPage.svelte";
 
-    // (23:4) {#if window.location.href.includes("pixly")}
+    // (27:4) {#if window.location.href.includes("pixly")}
     function create_if_block_2$1(ctx) {
     	var ins, t0, script, t1;
 
@@ -3735,8 +3974,8 @@
     			attr(ins, "data-ad-layout-key", "-f9+5v+4m-d8+7b");
     			attr(ins, "data-ad-client", "ca-pub-9259748524746137");
     			attr(ins, "data-ad-slot", "3942041487");
-    			add_location(ins, file$5, 23, 2, 626);
-    			add_location(script, file$5, 30, 8, 833);
+    			add_location(ins, file$6, 27, 2, 608);
+    			add_location(script, file$6, 34, 8, 815);
     		},
 
     		m: function mount(target, anchor) {
@@ -3756,9 +3995,11 @@
     	};
     }
 
-    // (36:1) {#if post && post.header}
+    // (40:1) {#if post && post.header}
     function create_if_block_1$2(ctx) {
-    	var article, section0, h2, t0_value = ctx.post.header, t0, t1, div, a, t2_value = ctx.post.author.name ? ctx.post.author.name : ctx.post.author.username, t2, a_href_value, t3, p, t4_value = ctx.post.updatedAt.slice(0,10), t4, t5, hr, t6, section1, raw_value = ctx.post.text;
+    	var article, section0, h2, t0_value = ctx.post.header, t0, t1, div1, a, div0, t2_value = ctx.post.author.name ? ctx.post.author.name : ctx.post.author.username, t2, a_href_value, t3, meta0, meta0_content_value, t4, meta1, meta1_content_value, t5, meta2, meta2_content_value, t6, p, t7_value = ctx.post.updatedAt.slice(0,10), t7, t8, hr, t9, section1, img, img_src_value, t10, html_tag, raw_value = ctx.post.text, t11, article_itemid_value, current;
+
+    	var publisherdata = new PublisherData({ $$inline: true });
 
     	return {
     		c: function create() {
@@ -3767,86 +4008,155 @@
     			h2 = element("h2");
     			t0 = text(t0_value);
     			t1 = space();
-    			div = element("div");
+    			div1 = element("div");
     			a = element("a");
+    			div0 = element("div");
     			t2 = text(t2_value);
     			t3 = space();
-    			p = element("p");
-    			t4 = text(t4_value);
+    			meta0 = element("meta");
+    			t4 = space();
+    			meta1 = element("meta");
     			t5 = space();
-    			hr = element("hr");
+    			meta2 = element("meta");
     			t6 = space();
+    			p = element("p");
+    			t7 = text(t7_value);
+    			t8 = space();
+    			hr = element("hr");
+    			t9 = space();
     			section1 = element("section");
+    			img = element("img");
+    			t10 = space();
+    			t11 = space();
+    			publisherdata.$$.fragment.c();
     			this.h();
     		},
 
     		l: function claim(nodes) {
-    			article = claim_element(nodes, "ARTICLE", { class: true }, false);
+    			article = claim_element(nodes, "ARTICLE", { class: true, itemscope: true, itemtype: true, itemid: true }, false);
     			var article_nodes = children(article);
 
     			section0 = claim_element(article_nodes, "SECTION", { class: true }, false);
     			var section0_nodes = children(section0);
 
-    			h2 = claim_element(section0_nodes, "H2", { class: true }, false);
+    			h2 = claim_element(section0_nodes, "H2", { class: true, itemprop: true }, false);
     			var h2_nodes = children(h2);
 
     			t0 = claim_text(h2_nodes, t0_value);
     			h2_nodes.forEach(detach);
-    			t1 = claim_text(section0_nodes, "\n\t\t\t");
+    			t1 = claim_text(section0_nodes, "\n\n\t\t\t");
 
-    			div = claim_element(section0_nodes, "DIV", { class: true }, false);
-    			var div_nodes = children(div);
+    			div1 = claim_element(section0_nodes, "DIV", { class: true }, false);
+    			var div1_nodes = children(div1);
 
-    			a = claim_element(div_nodes, "A", { target: true, class: true, href: true }, false);
+    			a = claim_element(div1_nodes, "A", { target: true, class: true, href: true }, false);
     			var a_nodes = children(a);
 
-    			t2 = claim_text(a_nodes, t2_value);
-    			a_nodes.forEach(detach);
-    			t3 = claim_text(div_nodes, "\n\t\t\t\t");
+    			div0 = claim_element(a_nodes, "DIV", { itemprop: true, itemtype: true }, false);
+    			var div0_nodes = children(div0);
 
-    			p = claim_element(div_nodes, "P", { class: true }, false);
+    			t2 = claim_text(div0_nodes, t2_value);
+    			div0_nodes.forEach(detach);
+    			a_nodes.forEach(detach);
+    			t3 = claim_text(div1_nodes, "\n\n\t\t\t\t");
+
+    			meta0 = claim_element(div1_nodes, "META", { itemprop: true, content: true }, false);
+    			var meta0_nodes = children(meta0);
+
+    			meta0_nodes.forEach(detach);
+    			t4 = claim_text(div1_nodes, "\n\t\t\t\t");
+
+    			meta1 = claim_element(div1_nodes, "META", { itemprop: true, content: true }, false);
+    			var meta1_nodes = children(meta1);
+
+    			meta1_nodes.forEach(detach);
+    			t5 = claim_text(div1_nodes, "\n\t\t\t\t");
+
+    			meta2 = claim_element(div1_nodes, "META", { itemprop: true, content: true }, false);
+    			var meta2_nodes = children(meta2);
+
+    			meta2_nodes.forEach(detach);
+    			t6 = claim_text(div1_nodes, "\n\t\t\t\t");
+
+    			p = claim_element(div1_nodes, "P", { class: true, itemprop: true }, false);
     			var p_nodes = children(p);
 
-    			t4 = claim_text(p_nodes, t4_value);
+    			t7 = claim_text(p_nodes, t7_value);
     			p_nodes.forEach(detach);
-    			div_nodes.forEach(detach);
+    			div1_nodes.forEach(detach);
     			section0_nodes.forEach(detach);
-    			t5 = claim_text(article_nodes, "\n\n\t\t");
+    			t8 = claim_text(article_nodes, "\n\n\t\t");
 
     			hr = claim_element(article_nodes, "HR", { class: true }, false);
     			var hr_nodes = children(hr);
 
     			hr_nodes.forEach(detach);
-    			t6 = claim_text(article_nodes, "\n\n\t\t");
+    			t9 = claim_text(article_nodes, "\n\n\t\t");
 
-    			section1 = claim_element(article_nodes, "SECTION", { id: true, class: true }, false);
+    			section1 = claim_element(article_nodes, "SECTION", { id: true, class: true, itemprop: true }, false);
     			var section1_nodes = children(section1);
 
+    			img = claim_element(section1_nodes, "IMG", { class: true, alt: true, itemtype: true, style: true, itemprop: true, src: true }, false);
+    			var img_nodes = children(img);
+
+    			img_nodes.forEach(detach);
+    			t10 = claim_text(section1_nodes, "\n\t\t\t");
     			section1_nodes.forEach(detach);
+    			t11 = claim_text(article_nodes, "\n\t\t");
+    			publisherdata.$$.fragment.l(article_nodes);
     			article_nodes.forEach(detach);
     			this.h();
     		},
 
     		h: function hydrate() {
-    			attr(h2, "class", "post-item-header svelte-12nl8tp");
-    			add_location(h2, file$5, 38, 3, 1023);
+    			attr(h2, "class", "post-item-header svelte-1ler1ly");
+    			attr(h2, "itemprop", "headline");
+    			add_location(h2, file$6, 46, 3, 1118);
+    			attr(div0, "itemprop", "author");
+    			attr(div0, "itemtype", "http://schema.org/Person");
+    			add_location(div0, file$6, 54, 5, 1349);
     			attr(a, "target", "_blank");
-    			attr(a, "class", "author underline svelte-12nl8tp");
+    			attr(a, "class", "author underline svelte-1ler1ly");
     			attr(a, "href", a_href_value = `https://pixly.app/user/${ctx.post.author.username}`);
-    			add_location(a, file$5, 40, 4, 1103);
-    			attr(p, "class", "post-item-date svelte-12nl8tp");
-    			add_location(p, file$5, 43, 4, 1283);
-    			attr(div, "class", "top-bottom svelte-12nl8tp");
-    			add_location(div, file$5, 39, 3, 1074);
-    			attr(section0, "class", "top-box svelte-12nl8tp");
-    			add_location(section0, file$5, 37, 2, 994);
-    			attr(hr, "class", "svelte-12nl8tp");
-    			add_location(hr, file$5, 47, 2, 1368);
+    			add_location(a, file$6, 49, 4, 1219);
+    			attr(meta0, "itemprop", "datePublished");
+    			attr(meta0, "content", meta0_content_value = ctx.post.updatedAt);
+    			add_location(meta0, file$6, 59, 4, 1502);
+    			attr(meta1, "itemprop", "dateCreated");
+    			attr(meta1, "content", meta1_content_value = ctx.post.createdAt);
+    			add_location(meta1, file$6, 60, 4, 1563);
+    			attr(meta2, "itemprop", "dateModified");
+    			attr(meta2, "content", meta2_content_value = ctx.post.updatedAt);
+    			add_location(meta2, file$6, 61, 4, 1622);
+    			attr(p, "class", "post-item-date svelte-1ler1ly");
+    			attr(p, "itemprop", "datePublished");
+    			add_location(p, file$6, 62, 4, 1682);
+    			attr(div1, "class", "top-bottom svelte-1ler1ly");
+    			add_location(div1, file$6, 48, 3, 1190);
+    			attr(section0, "class", "top-box svelte-1ler1ly");
+    			add_location(section0, file$6, 45, 2, 1089);
+    			attr(hr, "class", "svelte-1ler1ly");
+    			add_location(hr, file$6, 66, 2, 1794);
+    			attr(img, "class", "structure-image");
+    			attr(img, "alt", "post image");
+    			attr(img, "itemtype", "http://schema.org/ImageObject");
+    			set_style(img, "width", "80%");
+    			set_style(img, "height", "300px");
+    			set_style(img, "margin-left", "10%");
+    			set_style(img, "margin-bottom", "30px");
+    			attr(img, "itemprop", "image");
+    			attr(img, "src", img_src_value = ctx.post.imageUrl ? ctx.post.imageUrl : `https://cbs-static.s3.amazonaws.com/static/media/${ctx.post.image}`);
+    			add_location(img, file$6, 69, 3, 1889);
+    			html_tag = new HtmlTag(raw_value, null);
     			attr(section1, "id", "post");
-    			attr(section1, "class", "content-box svelte-12nl8tp");
-    			add_location(section1, file$5, 49, 2, 1376);
-    			attr(article, "class", "message-box svelte-12nl8tp");
-    			add_location(article, file$5, 36, 1, 962);
+    			attr(section1, "class", "content-box svelte-1ler1ly");
+    			attr(section1, "itemprop", "articleBody");
+    			add_location(section1, file$6, 68, 2, 1802);
+    			attr(article, "class", "message-box svelte-1ler1ly");
+    			attr(article, "itemscope", "");
+    			attr(article, "itemtype", "http://schema.org/BlogPosting");
+    			attr(article, "itemid", article_itemid_value = `https://blog.pixly.app/post/${ctx.post.slug}`);
+    			add_location(article, file$6, 41, 1, 946);
     		},
 
     		m: function mount(target, anchor) {
@@ -3855,50 +4165,99 @@
     			append(section0, h2);
     			append(h2, t0);
     			append(section0, t1);
-    			append(section0, div);
-    			append(div, a);
-    			append(a, t2);
-    			append(div, t3);
-    			append(div, p);
-    			append(p, t4);
-    			append(article, t5);
+    			append(section0, div1);
+    			append(div1, a);
+    			append(a, div0);
+    			append(div0, t2);
+    			append(div1, t3);
+    			append(div1, meta0);
+    			append(div1, t4);
+    			append(div1, meta1);
+    			append(div1, t5);
+    			append(div1, meta2);
+    			append(div1, t6);
+    			append(div1, p);
+    			append(p, t7);
+    			append(article, t8);
     			append(article, hr);
-    			append(article, t6);
+    			append(article, t9);
     			append(article, section1);
-    			section1.innerHTML = raw_value;
+    			append(section1, img);
+    			append(section1, t10);
+    			html_tag.m(section1);
+    			ctx.section1_binding(section1);
+    			append(article, t11);
+    			mount_component(publisherdata, article, null);
+    			current = true;
     		},
 
     		p: function update(changed, ctx) {
-    			if ((changed.post) && t0_value !== (t0_value = ctx.post.header)) {
+    			if ((!current || changed.post) && t0_value !== (t0_value = ctx.post.header)) {
     				set_data(t0, t0_value);
     			}
 
-    			if ((changed.post) && t2_value !== (t2_value = ctx.post.author.name ? ctx.post.author.name : ctx.post.author.username)) {
+    			if ((!current || changed.post) && t2_value !== (t2_value = ctx.post.author.name ? ctx.post.author.name : ctx.post.author.username)) {
     				set_data(t2, t2_value);
     			}
 
-    			if ((changed.post) && a_href_value !== (a_href_value = `https://pixly.app/user/${ctx.post.author.username}`)) {
+    			if ((!current || changed.post) && a_href_value !== (a_href_value = `https://pixly.app/user/${ctx.post.author.username}`)) {
     				attr(a, "href", a_href_value);
     			}
 
-    			if ((changed.post) && t4_value !== (t4_value = ctx.post.updatedAt.slice(0,10))) {
-    				set_data(t4, t4_value);
+    			if ((!current || changed.post) && meta0_content_value !== (meta0_content_value = ctx.post.updatedAt)) {
+    				attr(meta0, "content", meta0_content_value);
     			}
 
-    			if ((changed.post) && raw_value !== (raw_value = ctx.post.text)) {
-    				section1.innerHTML = raw_value;
+    			if ((!current || changed.post) && meta1_content_value !== (meta1_content_value = ctx.post.createdAt)) {
+    				attr(meta1, "content", meta1_content_value);
     			}
+
+    			if ((!current || changed.post) && meta2_content_value !== (meta2_content_value = ctx.post.updatedAt)) {
+    				attr(meta2, "content", meta2_content_value);
+    			}
+
+    			if ((!current || changed.post) && t7_value !== (t7_value = ctx.post.updatedAt.slice(0,10))) {
+    				set_data(t7, t7_value);
+    			}
+
+    			if ((!current || changed.post) && img_src_value !== (img_src_value = ctx.post.imageUrl ? ctx.post.imageUrl : `https://cbs-static.s3.amazonaws.com/static/media/${ctx.post.image}`)) {
+    				attr(img, "src", img_src_value);
+    			}
+
+    			if ((!current || changed.post) && raw_value !== (raw_value = ctx.post.text)) {
+    				html_tag.p(raw_value);
+    			}
+
+    			if ((!current || changed.post) && article_itemid_value !== (article_itemid_value = `https://blog.pixly.app/post/${ctx.post.slug}`)) {
+    				attr(article, "itemid", article_itemid_value);
+    			}
+    		},
+
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(publisherdata.$$.fragment, local);
+
+    			current = true;
+    		},
+
+    		o: function outro(local) {
+    			transition_out(publisherdata.$$.fragment, local);
+    			current = false;
     		},
 
     		d: function destroy(detaching) {
     			if (detaching) {
     				detach(article);
     			}
+
+    			ctx.section1_binding(null);
+
+    			destroy_component(publisherdata);
     		}
     	};
     }
 
-    // (58:2) {#if window.location.pathname !== "/"}
+    // (86:2) {#if window.location.pathname !== "/"}
     function create_if_block$3(ctx) {
     	var span, svg, path, t, dispose;
 
@@ -3931,7 +4290,7 @@
     		h: function hydrate() {
     			attr(path, "fill", "currentColor");
     			attr(path, "d", "M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z");
-    			add_location(path, file$5, 64, 5, 1798);
+    			add_location(path, file$6, 92, 5, 2600);
     			attr(svg, "aria-hidden", "true");
     			attr(svg, "focusable", "false");
     			attr(svg, "data-prefix", "fas");
@@ -3940,9 +4299,9 @@
     			attr(svg, "role", "img");
     			attr(svg, "xmlns", "http://www.w3.org/2000/svg");
     			attr(svg, "viewBox", "0 0 448 512");
-    			add_location(svg, file$5, 59, 4, 1590);
-    			add_location(span, file$5, 58, 3, 1541);
-    			dispose = listen(span, "click", ctx.click_handler);
+    			add_location(svg, file$6, 87, 4, 2392);
+    			add_location(span, file$6, 86, 3, 2343);
+    			dispose = listen(span, "click", click_handler$1);
     		},
 
     		m: function mount(target, anchor) {
@@ -3962,14 +4321,14 @@
     	};
     }
 
-    function create_fragment$7(ctx) {
-    	var div1, t0, t1, div0;
+    function create_fragment$8(ctx) {
+    	var div1, t0, t1, div0, current;
 
-    	var if_block0 = (ctx.window.location.href.includes("pixly")) && create_if_block_2$1();
+    	var if_block0 = (window.location.href.includes("pixly")) && create_if_block_2$1();
 
     	var if_block1 = (ctx.post && ctx.post.header) && create_if_block_1$2(ctx);
 
-    	var if_block2 = (ctx.window.location.pathname !== "/") && create_if_block$3(ctx);
+    	var if_block2 = (window.location.pathname !== "/") && create_if_block$3();
 
     	return {
     		c: function create() {
@@ -4003,9 +4362,9 @@
 
     		h: function hydrate() {
     			attr(div0, "class", "breadcrumb");
-    			add_location(div0, file$5, 56, 1, 1472);
+    			add_location(div0, file$6, 84, 1, 2274);
     			attr(div1, "class", "page-container");
-    			add_location(div1, file$5, 21, 0, 546);
+    			add_location(div1, file$6, 25, 0, 528);
     		},
 
     		m: function mount(target, anchor) {
@@ -4016,10 +4375,11 @@
     			append(div1, t1);
     			append(div1, div0);
     			if (if_block2) if_block2.m(div0, null);
+    			current = true;
     		},
 
     		p: function update(changed, ctx) {
-    			if (ctx.window.location.href.includes("pixly")) {
+    			if (window.location.href.includes("pixly")) {
     				if (!if_block0) {
     					if_block0 = create_if_block_2$1();
     					if_block0.c();
@@ -4033,19 +4393,24 @@
     			if (ctx.post && ctx.post.header) {
     				if (if_block1) {
     					if_block1.p(changed, ctx);
+    					transition_in(if_block1, 1);
     				} else {
     					if_block1 = create_if_block_1$2(ctx);
     					if_block1.c();
+    					transition_in(if_block1, 1);
     					if_block1.m(div1, t1);
     				}
     			} else if (if_block1) {
-    				if_block1.d(1);
-    				if_block1 = null;
+    				group_outros();
+    				transition_out(if_block1, 1, 1, () => {
+    					if_block1 = null;
+    				});
+    				check_outros();
     			}
 
-    			if (ctx.window.location.pathname !== "/") {
+    			if (window.location.pathname !== "/") {
     				if (!if_block2) {
-    					if_block2 = create_if_block$3(ctx);
+    					if_block2 = create_if_block$3();
     					if_block2.c();
     					if_block2.m(div0, null);
     				}
@@ -4055,8 +4420,16 @@
     			}
     		},
 
-    		i: noop,
-    		o: noop,
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(if_block1);
+    			current = true;
+    		},
+
+    		o: function outro(local) {
+    			transition_out(if_block1);
+    			current = false;
+    		},
 
     		d: function destroy(detaching) {
     			if (detaching) {
@@ -4070,9 +4443,15 @@
     	};
     }
 
+    function click_handler$1() {
+    	return window.history.back();
+    }
+
     function instance$5($$self, $$props, $$invalidate) {
     	
+    	
     	let { slug } = $$props;
+    	let postBody;
 
     	let post;
     	onMount(async () => {
@@ -4081,35 +4460,34 @@
     	});
     	/*
     	*/
-    	console.log(window.history);
-    	//console.log(window.location)
-    	//console.log("post page props",  slug)
 
     	const writable_props = ['slug'];
     	Object.keys($$props).forEach(key => {
-    		if (!writable_props.includes(key) && !key.startsWith('$$')) console_1$1.warn(`<PostPage> was created with unknown prop '${key}'`);
+    		if (!writable_props.includes(key) && !key.startsWith('$$')) console.warn(`<PostPage> was created with unknown prop '${key}'`);
     	});
 
-    	function click_handler() {
-    		return window.history.back();
+    	function section1_binding($$value) {
+    		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
+    			$$invalidate('postBody', postBody = $$value);
+    		});
     	}
 
     	$$self.$set = $$props => {
     		if ('slug' in $$props) $$invalidate('slug', slug = $$props.slug);
     	};
 
-    	return { slug, post, window, click_handler };
+    	return { slug, postBody, post, section1_binding };
     }
 
     class PostPage extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$5, create_fragment$7, safe_not_equal, ["slug"]);
+    		init(this, options, instance$5, create_fragment$8, safe_not_equal, ["slug"]);
 
     		const { ctx } = this.$$;
     		const props = options.props || {};
     		if (ctx.slug === undefined && !('slug' in props)) {
-    			console_1$1.warn("<PostPage> was created without expected prop 'slug'");
+    			console.warn("<PostPage> was created without expected prop 'slug'");
     		}
     	}
 
@@ -4124,9 +4502,9 @@
 
     /* src/App.svelte generated by Svelte v3.7.1 */
 
-    const file$6 = "src/App.svelte";
+    const file$7 = "src/App.svelte";
 
-    // (25:2) <Router>
+    // (28:2) <Router>
     function create_default_slot$1(ctx) {
     	var t0, main, t1, t2, t3, t4, current;
 
@@ -4196,7 +4574,7 @@
 
     		h: function hydrate() {
     			attr(main, "class", "main-content-container svelte-zy96l");
-    			add_location(main, file$6, 26, 2, 639);
+    			add_location(main, file$7, 29, 2, 871);
     		},
 
     		m: function mount(target, anchor) {
@@ -4285,8 +4663,8 @@
     	};
     }
 
-    function create_fragment$8(ctx) {
-    	var div, links_action, current;
+    function create_fragment$9(ctx) {
+    	var div, meta0, t0, meta1, t1, meta2, t2, links_action, current;
 
     	var router = new Router({
     		props: {
@@ -4299,26 +4677,66 @@
     	return {
     		c: function create() {
     			div = element("div");
+    			meta0 = element("meta");
+    			t0 = space();
+    			meta1 = element("meta");
+    			t1 = space();
+    			meta2 = element("meta");
+    			t2 = space();
     			router.$$.fragment.c();
     			this.h();
     		},
 
     		l: function claim(nodes) {
-    			div = claim_element(nodes, "DIV", { class: true }, false);
+    			div = claim_element(nodes, "DIV", { class: true, itemscope: true, itemtype: true }, false);
     			var div_nodes = children(div);
 
+    			meta0 = claim_element(div_nodes, "META", { itemprop: true, content: true }, false);
+    			var meta0_nodes = children(meta0);
+
+    			meta0_nodes.forEach(detach);
+    			t0 = claim_text(div_nodes, "\n    ");
+
+    			meta1 = claim_element(div_nodes, "META", { itemprop: true, content: true }, false);
+    			var meta1_nodes = children(meta1);
+
+    			meta1_nodes.forEach(detach);
+    			t1 = claim_text(div_nodes, "\n    ");
+
+    			meta2 = claim_element(div_nodes, "META", { itemprop: true, content: true }, false);
+    			var meta2_nodes = children(meta2);
+
+    			meta2_nodes.forEach(detach);
+    			t2 = claim_text(div_nodes, "\n\n  ");
     			router.$$.fragment.l(div_nodes);
     			div_nodes.forEach(detach);
     			this.h();
     		},
 
     		h: function hydrate() {
+    			attr(meta0, "itemprop", "about");
+    			attr(meta0, "content", "Tech and Cinema posts written by official pixly members.");
+    			add_location(meta0, file$7, 23, 4, 662);
+    			attr(meta1, "itemprop", "genre");
+    			attr(meta1, "content", "Tech");
+    			add_location(meta1, file$7, 24, 4, 759);
+    			attr(meta2, "itemprop", "genre");
+    			attr(meta2, "content", "Cinema");
+    			add_location(meta2, file$7, 25, 4, 803);
     			attr(div, "class", "App svelte-zy96l");
-    			add_location(div, file$6, 22, 0, 585);
+    			attr(div, "itemscope", "");
+    			attr(div, "itemtype", "http://schema.org/Blog");
+    			add_location(div, file$7, 22, 0, 585);
     		},
 
     		m: function mount(target, anchor) {
     			insert(target, div, anchor);
+    			append(div, meta0);
+    			append(div, t0);
+    			append(div, meta1);
+    			append(div, t1);
+    			append(div, meta2);
+    			append(div, t2);
     			mount_component(router, div, null);
     			links_action = links.call(null, div) || {};
     			current = true;
@@ -4368,7 +4786,7 @@
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$6, create_fragment$8, safe_not_equal, []);
+    		init(this, options, instance$6, create_fragment$9, safe_not_equal, []);
     	}
     }
 

@@ -1,5 +1,5 @@
 
-<nav id="navbar">
+<nav id="navbar" >
     <div class="brand-box nav-left">
         <a href="/" >
             <p class="brand-pixly-new">

@@ -1,8 +1,10 @@
+
 <script>
     import { Router, Link, Route } from "svelte-routing";
-
     export let post
+
 </script>
+
 
 
 
@@ -32,7 +34,9 @@
 
         {#if post.image }
             <div class="image-box">
-                 <img src={post.imageUrl ? post.imageUrl : post.image} alt="Post image" />
+                <Link to="{`/post/${post.slug}`}" state={{id:post.id}}>
+                    <img src={post.imageUrl ? post.imageUrl : post.image} alt="Post image" />
+                </Link>
             </div>
         {/if}
     </div>

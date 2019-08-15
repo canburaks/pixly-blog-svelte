@@ -19,6 +19,7 @@
   "scripts": {
     "build": "rollup -c",
     "autobuild": "rollup -c -w",
+    "deploy": "python upload.py",
     "dev": "run-p start:dev autobuild",
     "start": "sirv public --single",
     "start:dev": "sirv public --single --dev"

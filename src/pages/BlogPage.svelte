@@ -18,7 +18,9 @@
     //$:postKeys = Object.keys(storePosts)
 </script>
 
-<div class="page-container">
+<div class="page-container blog-page">
+
+
 	<div class="breadcrumb">
 		{#if window.location.pathname !== "/"}
 			<button class="back-button" on:click={() => window.history.back()}>

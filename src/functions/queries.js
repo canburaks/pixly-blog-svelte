@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request'
-import { Store, updateStore } from "./store.js"
+import { Store } from "./store.js"
 
 // ... or create a GraphQL client instance to send requests
 //const client = new GraphQLClient("https://blog.pixly.app/graphql", { headers: {} })
@@ -47,6 +47,7 @@ export async function blogRequest(page) {
 			Store.update(s  => ({...s, ...newPost}) )
 		})
 	}
+	console.log(data)
 
     return data
 }
@@ -74,6 +75,9 @@ export async function postRequestById(id) {
 	//console.log("post query data: ",data)
   // Add aws s3 prefix to image, cant be done on server
 	//Update local store
+    if (data && data.post){
+		data.post.imageUrl = "https://cbs-static.s3.amazonaws.com/static/media/" + data.post.image
+	}
 	if (data && data.post) {
 		//console.log("post query data.post:", data.post)
 		const newPost = {}
@@ -107,6 +111,9 @@ export async function postRequestBySlug(slug) {
 	//console.log("post query data: ", data)
 	// Add aws s3 prefix to image, cant be done on server
 	//Update local store
+    if (data && data.post){
+		data.post.imageUrl = "https://cbs-static.s3.amazonaws.com/static/media/" + data.post.image
+	}
 	if (data && data.post) {
 		//console.log("post query data.post:", data.post)
 		const newPost = {}

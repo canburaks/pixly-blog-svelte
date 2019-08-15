@@ -3,8 +3,12 @@
 	//import { getClient, query } from 'svelte-apollo';
 	//import { GET_BLOG, GET_POST } from './queries';
 	import PostItem from "../components/PostItem.svelte";
+	import PublisherData from "../richdata/PublisherData.svelte";
+
 	import { Store, updateStore, getPostBySlug, getServerPostBySlug} from "../functions/store.js"
+	
 	export let slug;
+	let postBody;
 
 	let post;
 	onMount(async () => {
@@ -13,10 +17,10 @@
 	})
 	/*
 	*/
-	console.log(window.history)
-	//console.log(window.location)
-	//console.log("post page props",  slug)
+
+
 </script>
+
 
 
 <div class="page-container">
@@ -34,23 +38,47 @@
     {/if}
 
 	{#if post && post.header}
-	<article class="message-box">
+	
+	<article class="message-box" 
+		itemscope itemtype="http://schema.org/BlogPosting"
+		itemid={`https://blog.pixly.app/post/${post.slug}`}
+		>
 		<section class="top-box">
-			<h2 class="post-item-header">{post.header}</h2>
+			<h2 class="post-item-header" itemprop="headline">{post.header}</h2>
+
 			<div class="top-bottom">
-				<a target="_blank" class="author underline" href={`https://pixly.app/user/${post.author.username}`}>
-					{post.author.name ? post.author.name : post.author.username}
+				<a 
+					target="_blank" 
+					class="author underline" 
+					href={`https://pixly.app/user/${post.author.username}`}
+					>
+					<div itemprop="author" itemtype="http://schema.org/Person">
+						{post.author.name ? post.author.name : post.author.username}
+					</div>
 				</a>
-				<p class="post-item-date">{post.updatedAt.slice(0,10)}</p>
+
+				<meta itemprop="datePublished" content={post.updatedAt}>
+				<meta itemprop="dateCreated" content={post.createdAt}>
+				<meta itemprop="dateModified" content={post.updatedAt}>
+				<p class="post-item-date" itemprop="datePublished"  >{post.updatedAt.slice(0,10)}</p>
 			</div>
 		</section>
 
 		<hr>
 
-		<section id="post" class="content-box">
+		<section id="post" class="content-box" itemprop="articleBody" bind:this={postBody}>
+			<img 
+				class="structure-image" 
+				alt="post image" itemtype="http://schema.org/ImageObject"
+				style="width:80%; height:300px; margin-left:10%; margin-bottom:30px;"
+				itemprop="image"  src={post.imageUrl ? post.imageUrl : `https://cbs-static.s3.amazonaws.com/static/media/${post.image}` }
+					/>
 			{@html post.text}
-		</section>
 
+
+		</section>
+		<PublisherData />
+		
 	</article>
 	{/if}
 
@@ -69,6 +97,10 @@
 		{/if}
 	</div>
 </div>
+
+
+
+
 
 <style>
 	.message-box{
@@ -106,7 +138,7 @@
 	}
 	.content-box{
 		width: 100%;
-		margin-top: 40px;
+		margin-top: 10px;
 	}
 	.post-item-date{
 		margin-left: 16px;

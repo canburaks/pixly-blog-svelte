@@ -20,12 +20,14 @@
 	});
 </script>
 
-<div class="App" use:links>
+<div class="App" use:links  itemscope itemtype="http://schema.org/Blog">
+    <meta itemprop="about" content="Tech and Cinema posts written by official pixly members." />
+    <meta itemprop="genre" content="Tech"/>
+    <meta itemprop="genre" content="Cinema"/>
 
   <Router>
 	<Navbar />
 		<main class="main-content-container">
-
 			<Route path="post/:slug" component="{PostPage}" />
 			<Route path="/:page" component="{BlogPage}" />
 			<Route path="blog" component="{BlogPage}" />

@@ -1,4 +1,4 @@
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import { postRequestBySlug, postRequestById } from "./queries"
 
 export const Store = writable({});
@@ -10,8 +10,9 @@ Store.subscribe(value => {
 
 
 export function updateStore(post){
-    const newStore = Store[post.id] = post
-    Store.update(newStore)
+    const newPost = {}
+    newPost[post.id] = post
+    Store.update(s => ({ ...s, ...newPost }))
 }
 
 
